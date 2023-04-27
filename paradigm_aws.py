@@ -184,7 +184,7 @@ def create_workflow_yaml(steps=None, dependencies=None, deployment_step=None, de
 
         deploy_task_additional = {
                 "name": f"step-get-ip-of-{deployment_step}",
-                "dependencies": [f"{deployment_step}"],
+                "dependencies": [f"step-{deployment_step}"],
                 "template": "get-ip"
             }
         dag_tasks.append(deploy_task_additional)
