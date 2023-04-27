@@ -13,6 +13,8 @@ You need a Kubernetes cluster and `kubectl` set up to be able to access that clu
 - Please refer to the [Amazon EKS](https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html) on how to set things up
 - Make sure you can [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html) installed and configured as well
 
+Also, make sure [Docker](https://docs.docker.com/engine/install/) is installed and running in your environment
+
 ### Set up Paradigm
 
 In a terminal with the above kubectl access, follow the below steps.
@@ -50,7 +52,7 @@ Your folder can contain one or more scripts/notebooks that you want to execute a
 
 - Now we are ready to let Paradigm get the code ready before deploying to the Kubernetes cluster. Include the scripts/notebook you want as steps in the below command. Choose any name as `<repo_name>` for the pipeline steps.
 ```
-paradigm launch --repo <repo_name> --steps p1 p2 p3 --region_name "us-east-1"
+paradigm launch --repo <repo_name> --steps p1 p2 p3 --region_name us-east-1
 ```
 - To the final step. Deploy the pipeline with the below command.
     - `<repo_name>` should be the same as above
