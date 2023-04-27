@@ -74,7 +74,7 @@ CMD ["python", "./{step}.py"]
 
     # Create the repository
     try:
-        response = ecr_client.create_repository(repositoryName=f"{repo_name}")
+        response = ecr_client.create_repository(repositoryName=f"{step}")
     except ecr_client.exceptions.RepositoryAlreadyExistsException:
         pass
 
@@ -88,7 +88,7 @@ CMD ["python", "./{step}.py"]
     # Login to ECR
     client.login(username, password, registry=registry, reauth=True)
 
-    image_tag = f"{registry}/{repo_name}/{step}:latest"
+    image_tag = f"{registry}/{step}:latest"
     print(f"Building Docker image: {image_tag}")
     image, _ = client.images.build(path=step_dir, tag=image_tag)
 
@@ -100,7 +100,7 @@ CMD ["python", "./{step}.py"]
     print(f"Ready to push image - {image_tag}")
 
     # Push the image
-    for line in client.images.push(f"{registry}/{repo_name}", tag=f"{step}/latest", stream=True, decode=True):
+    for line in client.images.push(f"{registry}/{step}", tag="latest", stream=True, decode=True):
         print(line)
 
     # client.images.push(repo_name, tag=f"{step}:latest")
