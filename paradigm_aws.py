@@ -95,6 +95,7 @@ CMD ["python", "./{step}.py"]
     # Tag the image
     docker_image = client.images.get(f"{repo_name}/{step}")
     docker_image.tag(f"{registry}/{step}", tag="latest")
+    print(f"Ready to push image - {registry}/{step}:latest")
 
     # Push the image
     for line in client.images.push(f"{registry}/{step}", tag="latest", stream=True, decode=True):
