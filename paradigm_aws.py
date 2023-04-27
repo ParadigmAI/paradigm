@@ -23,7 +23,6 @@ def convert_ipynb_to_py(input_file, step):
 
 def build_and_push_docker_image(step, repo_name, region_name):
     client = docker.from_env()
-    image_tag = f"{repo_name}/{step}:latest"
 
     # Create step directory if not exists
     step_dir = f"./{step}"
@@ -65,10 +64,6 @@ CMD ["python", "./{step}.py"]
     with open(dockerfile_path, "w") as dockerfile:
         dockerfile.write(dockerfile_content)
 
-    print(f"Building Docker image: {image_tag}")
-    image, _ = client.images.build(path=step_dir, tag=image_tag)
-
-    print("Pushing Docker image...")
 
     session = boto3.Session(
         region_name=region_name,
@@ -88,13 +83,20 @@ CMD ["python", "./{step}.py"]
     response = ecr_client.get_authorization_token()
     username, password = base64.b64decode(response['authorizationData'][0]['authorizationToken']).decode().split(':')
     registry = response['authorizationData'][0]['proxyEndpoint']
+    print(f"Reterived registry name - {registry}")
 
     # Login to ECR
     client.login(username, password, registry=registry, reauth=True)
 
+    image_tag = f"{registry}/{step}:latest"
+    print(f"Building Docker image: {image_tag}")
+    image, _ = client.images.build(path=step_dir, tag=image_tag)
+
+    print("Pushing Docker image...")
+
     # Tag the image
-    docker_image = client.images.get(f"{repo_name}/{step}")
-    docker_image.tag(f"{registry}/{step}", tag="latest")
+    # docker_image = client.images.get(f"{registry}/{step}")
+    # docker_image.tag(f"{registry}/{step}", tag="latest")
     print(f"Ready to push image - {registry}/{step}:latest")
 
     # Push the image
