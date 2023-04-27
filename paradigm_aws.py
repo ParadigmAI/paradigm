@@ -288,15 +288,44 @@ def run_argo_submit(file_path):
     command = ['argo', 'submit', '-n', 'argo', '--watch', file_path]
 
     try:
-        result = subprocess.run(command, capture_output=True, text=True, check=True)
-        print("Output:\n", result.stdout)
-        print("Error (if any):\n", result.stderr)
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+        # Print output in real-time
+        while True:
+            output = process.stdout.readline()
+            error = process.stderr.readline()
+
+            if output == '' and process.poll() is not None:
+                break
+            if output:
+                print("Output:", output.strip())
+            if error:
+                print("Error:", error.strip())
+
+        rc = process.poll()
+
+        return rc
 
     except subprocess.CalledProcessError as e:
         print("Error executing command:", e)
         print("Output:\n", e.output)
         print("Error:\n", e.stderr)
 
+def get_logs_from_workflow():
+    namespace = 'argo'
+
+    # Execute the first command and get the name of the latest workflow.
+    argo_list_cmd = f'argo list -n {namespace} --output json'
+    argo_list_output = subprocess.check_output(argo_list_cmd, shell=True, text=True)
+    workflows = json.loads(argo_list_output)
+    workflow_name = max(workflows, key=lambda x: x['metadata']['creationTimestamp'])['metadata']['name']
+
+    # Execute the second command and get the logs of the latest workflow.
+    argo_logs_cmd = f'argo logs -n {namespace} {workflow_name}'
+    argo_logs_output = subprocess.check_output(argo_logs_cmd, shell=True, text=True)
+
+    # Print the output of the second command while preserving the formatting.
+    print(argo_logs_output)
 
 def deploy(args):
     # dependencies = []
@@ -319,6 +348,9 @@ def deploy(args):
     run_argo_submit(args.output)
 
     print(f"Completed running the Workflow")
+
+    print("Logs**")
+    get_logs_from_workflow()
 
 def main():
     parser = argparse.ArgumentParser(description="Paradigm: Fastest ML Pipelines (On AWS)")
