@@ -82,7 +82,7 @@ CMD ["python", "./{step}.py"]
     # Get authorization token
     response = ecr_client.get_authorization_token()
     username, password = base64.b64decode(response['authorizationData'][0]['authorizationToken']).decode().split(':')
-    registry = response['authorizationData'][0]['proxyEndpoint']
+    registry = str(response['authorizationData'][0]['proxyEndpoint']).split('//')[1]
     print(f"Reterived registry name - {registry}")
 
     # Login to ECR
