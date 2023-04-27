@@ -100,7 +100,7 @@ CMD ["python", "./{step}.py"]
     print(f"Ready to push image - {image_tag}")
 
     # Push the image
-    for line in client.images.push(f"{registry}/{repo_name}/{step}", tag="latest", stream=True, decode=True):
+    for line in client.images.push(f"{registry}/{repo_name}", tag=f"{step}/latest", stream=True, decode=True):
         print(line)
 
     # client.images.push(repo_name, tag=f"{step}:latest")
