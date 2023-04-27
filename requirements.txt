@@ -1,0 +1,5 @@
+pyyaml
+docker
+setuptools
+wheel
+boto3
