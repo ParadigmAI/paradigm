@@ -62,10 +62,10 @@ paradigm launch --steps p1 p2 p3 --region_name us-east-1
 paradigm deploy --steps p1 p2 --dependencies "p2:p1,p3:p2|p1" --deployment p3 --deployment_port <if deplyment step has a post exposed> --output workflow.yaml --name <pipeline_name> --region_name us-east-1
 ```
 
-- (OPTIONAL) In case you want to delete the running service and deployment, use the following commands
-    - `kubectl delete deployment deploy-p3 -n argo`
-    - `kubectl delete service deploy-p3 -n argo`
-
+- (OPTIONAL) In case you want to delete the running service and deployment, use the following commands. `<deployment_step>` is the make of the file that has the deolyment code.
+    - `kubectl delete deployment deploy-<deployment_step> -n argo`
+    - `kubectl delete service deploy-<deployment_step> -n argo`
+    
 ## To Deploy Locally 💻
 
 You need a Kubernetes cluster and `kubectl` set up to be able to access that cluster. For this to run locally, we recommend using `minikube`.
@@ -123,9 +123,9 @@ paradigm deploy --repo <repo_name>  --steps p1 p2 --dependencies "p2:p1,p3:p2|p1
 
     - `minikube service deploy-p3 -n argo`
 
-- (OPTIONAL) In case you want to delete the running service and deployment, use the following commands
-    - `kubectl delete deployment deploy-p3 -n argo`
-    - `kubectl delete service deploy-p3 -n argo`
+- (OPTIONAL) In case you want to delete the running service and deployment, use the following commands. `<deployment_step>` is the make of the file that has the deolyment code.
+    - `kubectl delete deployment deploy-<deployment_step> -n argo`
+    - `kubectl delete service deploy-<deployment_step> -n argo`
 
 
 <br/><br/>
