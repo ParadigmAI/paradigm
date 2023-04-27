@@ -126,6 +126,8 @@ def create_workflow_yaml(steps=None, dependencies=None, deployment_step=None, de
     ecr_client = session.client('ecr')
 
     def find_registry_name(step):
+
+        registry = None
         # Create the repository
         try:
             # List repositories
@@ -139,12 +141,12 @@ def create_workflow_yaml(steps=None, dependencies=None, deployment_step=None, de
                 # Check if the image is in the current repository
                 for image in images['imageIds']:
                     print(f"Found image - {image}")
+                    print(f"Imagetag - {image['imageTag']}")
                     if 'imageTag' in image and image['imageTag'] == f"{step}":
                         print(f"Image {step}:latest found in repository '{repo['repositoryName']}' in registry '{repo['registryId']}'")
-                        registry = repo['registryId']
+                        registry = repo['repositoryName']
 
         except:
-            registry = None
             print("***Registry not found")
 
         return registry
