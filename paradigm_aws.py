@@ -125,26 +125,33 @@ def create_workflow_yaml(steps=None, dependencies=None, deployment_step=None, de
     # Initialize the ECR client
     ecr_client = session.client('ecr')
 
-    # Create the repository
-    try:
-        response = ecr_client.create_repository(repositoryName=f"{step}")
-    except ecr_client.exceptions.RepositoryAlreadyExistsException:
-        pass
+    def find_registry_name(step):
+        # Create the repository
+        try:
+            # List repositories
+            repositories = ecr_client.describe_repositories()
 
+            # Iterate over all repositories
+            for repo in repositories['repositories']:
+                # List images in the current repository
+                images = ecr_client.list_images(repositoryName=repo['repositoryName'])
 
-    # Get authorization token
-    response = ecr_client.get_authorization_token()
-    username, password = base64.b64decode(response['authorizationData'][0]['authorizationToken']).decode().split(':')
-    registry = str(response['authorizationData'][0]['proxyEndpoint']).split('//')[1]
-    print(f"Reterived registry name - {registry}")
+                # Check if the image is in the current repository
+                for image in images['imageIds']:
+                    if 'imageTag' in image and image['imageTag'] == f"{step}:latest":
+                        print(f"Image {step}:latest found in repository '{repo['repositoryName']}' in registry '{repo['registryId']}'")
+                        registry = repo['registryId']
 
-    # Login to ECR
-    client.login(username, password, registry=registry, reauth=True)
+        except ecr_client.exceptions.RepositoryAlreadyExistsException:
+            pass
 
-    # image_tag = f"{registry}/{step}:latest"
+        return registry
 
     if steps:
         for step in steps:
+
+            registry = find_registry_name(step)
+
             task_name = f"step-{step}"
             dag_task = {
                 "name": task_name,
@@ -176,6 +183,8 @@ def create_workflow_yaml(steps=None, dependencies=None, deployment_step=None, de
     ]
 
     if deployment_step:
+
+        registry = find_registry_name(deployment_step)
 
         if deployment_step in dependencies:
             deploy_task = {
