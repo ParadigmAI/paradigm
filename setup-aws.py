@@ -7,7 +7,7 @@ setup(
     install_requires=["PyYAML", "docker"],
     entry_points={
         "console_scripts": [
-            "paradigm-aws = paradigm-aws:main",
+            "paradigm = paradigm_aws:main",
         ],
     },
 )
