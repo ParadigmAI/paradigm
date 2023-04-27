@@ -159,7 +159,15 @@ def create_workflow_yaml(repo_name, steps=None, dependencies=None, deployment_st
                 "name": f"step-{deployment_step}",
                 "template": f"deploy-{deployment_step}"
             }
+            
         dag_tasks.append(deploy_task)
+
+        deploy_task_additional = {
+                "name": f"step-get-ip-of-{deployment_step}",
+                "dependencies": [f"{deployment_step}"],
+                "template": "get-ip"
+            }
+        dag_tasks.append(deploy_task_additional)
 
         deployment_template = {
             "name": f"deploy-{deployment_step}",
@@ -172,7 +180,7 @@ kind: Service
 metadata:
   name: deploy-{deployment_step}
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector:
     app: deploy-{deployment_step}
   ports:
@@ -209,6 +217,22 @@ EOF"""
 
         templates.append(deployment_template)
 
+        get_ip_template = {
+            "name": "get-ip",
+            "script": {
+                "image": "bitnami/kubectl:latest",
+                "command": ["/bin/bash"],
+                "source": f'''SERVICE_NAME=deploy-{deployment_step}
+while [ -z $SERVICE_IP ]; do
+  echo "Waiting for end point..."
+  SERVICE_IP=$(kubectl get svc $SERVICE_NAME --output jsonpath='{{.status.loadBalancer.ingress[0].ip}}')
+  sleep 2
+done
+echo "End point: $SERVICE_IP"'''
+                }
+            }
+        
+        templates.append(get_ip_template)
 
     workflow = {
         "apiVersion": "argoproj.io/v1alpha1",
