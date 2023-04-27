@@ -2,7 +2,7 @@
 
 [![version](https://img.shields.io/badge/version-0.1-yellow)]() [![discord](https://img.shields.io/badge/chat-discord-blueviolet)]()
 
-Paradigm Lightning is a light-weight, blazing-fast tool to package your ML code into pipelines and deploy on Kubernetes. No need to refactor any code for production. Paradigm Lightning can read your Python notebooks and scripts and prepare them quickly for scalable production. 
+Paradigm is a light-weight, lightning-fast, supremely adaptable tool, effortlessly packaging your ML code into robust pipelines for seamless deployment on Kubernetes. Bypass the need for code refactoring as Paradigm intelligently interprets your Python notebooks and scripts, priming them for scalable production. Paradigm is your ultimate ally in ML deployment, merging unparalleled speed, adaptability, and simplicity into one package.
 
 
 # Quickstart
@@ -65,7 +65,7 @@ paradigm deploy --steps p1 p2 --dependencies "p2:p1,p3:p2|p1" --deployment p3 --
 - (OPTIONAL) In case you want to delete the running service and deployment, use the following commands. `<deployment_step>` is the make of the file that has the deolyment code.
     - `kubectl delete deployment deploy-<deployment_step> -n argo`
     - `kubectl delete service deploy-<deployment_step> -n argo`
-    
+
 ## To Deploy Locally 💻
 
 You need a Kubernetes cluster and `kubectl` set up to be able to access that cluster. For this to run locally, we recommend using `minikube`.
