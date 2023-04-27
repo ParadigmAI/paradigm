@@ -88,7 +88,7 @@ CMD ["python", "./{step}.py"]
     # Login to ECR
     client.login(username, password, registry=registry, reauth=True)
 
-    image_tag = f"{registry}/{step}:latest"
+    image_tag = f"{registry}/{repo_name}/{step}:latest"
     print(f"Building Docker image: {image_tag}")
     image, _ = client.images.build(path=step_dir, tag=image_tag)
 
@@ -97,10 +97,10 @@ CMD ["python", "./{step}.py"]
     # Tag the image
     # docker_image = client.images.get(f"{registry}/{step}")
     # docker_image.tag(f"{registry}/{step}", tag="latest")
-    print(f"Ready to push image - {registry}/{step}:latest")
+    print(f"Ready to push image - {image_tag}")
 
     # Push the image
-    for line in client.images.push(f"{registry}/{step}", tag="latest", stream=True, decode=True):
+    for line in client.images.push(f"{registry}/{repo_name}/{step}", tag="latest", stream=True, decode=True):
         print(line)
 
     # client.images.push(repo_name, tag=f"{step}:latest")
