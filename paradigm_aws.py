@@ -113,9 +113,35 @@ def containerize_steps(repo_name, steps, region_name):
             os.mkdir(step)
         build_and_push_docker_image(step, repo_name, region_name)
 
-def create_workflow_yaml(repo_name, steps=None, dependencies=None, deployment_step=None, deployment_port=None, name=None):
+def create_workflow_yaml(repo_name, steps=None, dependencies=None, deployment_step=None, deployment_port=None, name=None, region_name=None):
     dag_tasks = []
     container_templates = []
+
+    client = docker.from_env()
+    session = boto3.Session(
+        region_name=region_name,
+    )
+
+    # Initialize the ECR client
+    ecr_client = session.client('ecr')
+
+    # Create the repository
+    try:
+        response = ecr_client.create_repository(repositoryName=f"{step}")
+    except ecr_client.exceptions.RepositoryAlreadyExistsException:
+        pass
+
+
+    # Get authorization token
+    response = ecr_client.get_authorization_token()
+    username, password = base64.b64decode(response['authorizationData'][0]['authorizationToken']).decode().split(':')
+    registry = str(response['authorizationData'][0]['proxyEndpoint']).split('//')[1]
+    print(f"Reterived registry name - {registry}")
+
+    # Login to ECR
+    client.login(username, password, registry=registry, reauth=True)
+
+    # image_tag = f"{registry}/{step}:latest"
 
     if steps:
         for step in steps:
@@ -133,7 +159,7 @@ def create_workflow_yaml(repo_name, steps=None, dependencies=None, deployment_st
             container_templates.append({
                 "name": step,
                 "container": {
-                    "image": f"{repo_name}/{step}:latest",
+                    "image": f"{registry}/{step}:latest",
                     "command": ["python", f"{step}.py"],
                     "imagePullPolicy": "IfNotPresent"
                 }
@@ -207,7 +233,7 @@ spec:
     spec:
       containers:
       - name: {deployment_step}
-        image: {repo_name}/{deployment_step}:latest
+        image: {registry}/{deployment_step}:latest
         ports:
         - containerPort: {deployment_port}
         imagePullPolicy: IfNotPresent
@@ -291,7 +317,7 @@ def deploy(args):
 
     dependencies = parse_dependencies(args.dependencies)
 
-    yaml_file = create_workflow_yaml(args.repo, steps=args.steps, dependencies=dependencies, deployment_step=args.deployment, deployment_port=args.deployment_port, name=args.name)
+    yaml_file = create_workflow_yaml(args.repo, steps=args.steps, dependencies=dependencies, deployment_step=args.deployment, deployment_port=args.deployment_port, name=args.name, region_name=args.region_name)
 
     with open(args.output, "w") as f:
         f.write(yaml_file)
@@ -323,6 +349,7 @@ def main():
     parser_deploy.add_argument("--deployment_port", default=None, help="The port number of the deployment app")
     parser_deploy.add_argument("--output", default="workflow.yaml", help="Output YAML file name")
     parser_deploy.add_argument("--name", default="paradigm-pipeline", help="Name of the pipeline")
+    parser_deploy.add_argument("--region_name", default="us-east-1", help="Container registry region name")
     parser_deploy.set_defaults(func=deploy)
 
     args = parser.parse_args()
