@@ -64,8 +64,8 @@ Your folder can contain one or more scripts/notebooks that you want to execute a
 - First, let's configure your current terminal session to use the Docker daemon inside the Minikube environment instead of the default Docker daemon on your host machine. This eliminated teh need for an image registry when working locally.
     - `eval $(minikube docker-env)`
 
-- The preferred directory structure should be as follows. In the below example, `p1, p2 and p3` represent any python script or notebook you have. (Refer the [./examples/basic]())
-    - IMPORTANT - note the `requirements.<file name>` files. You have to create a txt with the specific naming convention **only for the scripts or notebooks that need have additional dependencies**. It should include all the dependecies that are required for each step. (Refer the [./examples/basic]()). We promise this is the only file addition before taking your ML code to prodution.
+- The preferred directory structure should be as follows. In the below example, `p1, p2 and p3` represent any python script or notebook you have. (Refer the [examples/basic](./examples/basic))
+    - IMPORTANT - note the `requirements.<file name>` files. You have to create a txt with the specific naming convention **only for the scripts or notebooks that need have additional dependencies**. It should include all the dependecies that are required for each step. (Refer the [examples/basic](./examples/basic)). We promise this is the only file addition before taking your ML code to prodution.
 ```
     - 📁 project_root
         - 📄 p1.py
