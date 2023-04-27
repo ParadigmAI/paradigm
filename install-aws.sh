@@ -45,7 +45,7 @@ case "${os_name}" in
     chmod +x argo-linux-amd64
 
     # Move binary to path
-    sudo mv ./argo-linux-amd64 /usr/local/bin/argo
+    mv ./argo-linux-amd64 /usr/local/bin/argo
     ;;
   *)
     echo "Unsupported operating system: ${os_name}"
