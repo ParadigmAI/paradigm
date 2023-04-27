@@ -122,41 +122,19 @@ def create_workflow_yaml(steps=None, dependencies=None, deployment_step=None, de
         region_name=region_name,
     )
 
-    # Initialize the ECR client
-    ecr_client = session.client('ecr')
+    # Initialize the STS client
+    sts_client = session.client('sts')
 
-    def find_registry_name(step):
+    # Get caller identity
+    response = sts_client.get_caller_identity()
 
-        registry = None
-        # Create the repository
-        try:
-            # List repositories
-            repositories = ecr_client.describe_repositories()
+    # Return the account ID
+    registry = response['Account']
 
-            # Iterate over all repositories
-            for repo in repositories['repositories']:
-                # List images in the current repository
-                images = ecr_client.list_images(repositoryName=repo['repositoryName'])
-                print("Iterating on images found")
-                # Check if the image is in the current repository
-                for image in images['imageIds']:
-                    print(f"Found image - {image}")
-                    print(f"Repo name - {repo['repositoryName']}")
-                    print(f"Imagetag - {image['imageTag']}")
-                    
-                    if 'imageTag' in image and image['imageTag'] == f"{step}":
-                        print(f"Image {step}:latest found in repository '{repo['repositoryName']}' in registry '{repo['registryId']}'")
-                        registry = repo['repositoryName']
-
-        except:
-            print("***Registry not found")
-
-        return registry
+    print(f"Found the account ID - {registry}")
 
     if steps:
         for step in steps:
-
-            registry = find_registry_name(step)
 
             task_name = f"step-{step}"
             dag_task = {
@@ -189,8 +167,6 @@ def create_workflow_yaml(steps=None, dependencies=None, deployment_step=None, de
     ]
 
     if deployment_step:
-
-        registry = find_registry_name(deployment_step)
 
         if deployment_step in dependencies:
             deploy_task = {
