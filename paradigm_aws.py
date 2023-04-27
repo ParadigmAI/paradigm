@@ -252,7 +252,7 @@ echo "End point: $SERVICE_IP"'''
 
 
 def launch(args):
-    containerize_steps(args.repo, args.steps. args.region_name)
+    containerize_steps(args.repo, args.steps, args.region_name)
 
 def parse_dependencies(dependencies_str):
     dependencies = {}
