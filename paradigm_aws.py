@@ -245,7 +245,7 @@ EOF"""
                 "source": f'''SERVICE_NAME=deploy-{deployment_step}
 while [ -z $SERVICE_IP ]; do
   echo "Waiting for end point..."
-  SERVICE_IP=$(kubectl get svc $SERVICE_NAME --output jsonpath='{{.status.loadBalancer.ingress[0].ip}}')
+  SERVICE_IP=$(kubectl get svc -n argo $SERVICE_NAME --output jsonpath='{{.status.loadBalancer.ingress[0].hostname}}')
   sleep 2
 done
 echo "End point: $SERVICE_IP"'''
