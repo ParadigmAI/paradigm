@@ -19,7 +19,7 @@ In a terminal with the above kubectl access, follow the below steps.
 
 - (Recommended) Create a new Python environment with your preferred environment manager
 - Clone this repo 
-    - `git clone ...`
+    - `git clone https://github.com/ParadigmAI/paradigm.git`
 - Go into the directory 
     - `cd paradigm`
 - Rename setup-aws.py as setup.py
@@ -43,7 +43,7 @@ You need a Kubernetes cluster and `kubectl` set up to be able to access that clu
 
 - (Recommended) Create a new Python environment with your preferred environment manager
 - Clone this repo 
-    - `git clone ...`
+    - `git clone https://github.com/ParadigmAI/paradigm.git`
 - Go into the directory 
     - `cd paradigm`
 - Rename setup-local.py as setup.py, Use the below commands
