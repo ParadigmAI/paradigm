@@ -135,15 +135,17 @@ def create_workflow_yaml(steps=None, dependencies=None, deployment_step=None, de
             for repo in repositories['repositories']:
                 # List images in the current repository
                 images = ecr_client.list_images(repositoryName=repo['repositoryName'])
-
+                print("Iterating on images found")
                 # Check if the image is in the current repository
                 for image in images['imageIds']:
-                    if 'imageTag' in image and image['imageTag'] == f"{step}:latest":
+                    print(f"Found image - {image}")
+                    if 'imageTag' in image and image['imageTag'] == f"{step}":
                         print(f"Image {step}:latest found in repository '{repo['repositoryName']}' in registry '{repo['registryId']}'")
                         registry = repo['registryId']
 
-        except ecr_client.exceptions.RepositoryAlreadyExistsException:
-            pass
+        except:
+            registry = None
+            print("***Registry not found")
 
         return registry
 
