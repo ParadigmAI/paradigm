@@ -12,7 +12,7 @@ kubectl patch deployment \
   "server",
   "--auth-mode=server"
 ]}]'
-kubectl -n argo port-forward deployment/argo-server 2746:2746
+# kubectl -n argo port-forward deployment/argo-server 2746:2746
 
 # Detect the running operating system
 os_name="$(uname)"
