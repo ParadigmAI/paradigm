@@ -129,7 +129,7 @@ def create_workflow_yaml(steps=None, dependencies=None, deployment_step=None, de
     response = sts_client.get_caller_identity()
 
     # Return the account ID
-    registry = response['Account']
+    registry = f"{response['Account']}.dkr.ecr.{region_name}.amazonaws.com"
 
     print(f"Found the account ID - {registry}")
 
