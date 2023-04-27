@@ -21,7 +21,7 @@ def convert_ipynb_to_py(input_file, step):
                 output.write(code)
                 output.write("\n\n")
 
-def build_and_push_docker_image(step, repo_name, region_name):
+def build_and_push_docker_image(step, region_name):
     client = docker.from_env()
 
     # Create step directory if not exists
@@ -113,7 +113,7 @@ def containerize_steps(repo_name, steps, region_name):
             os.mkdir(step)
         build_and_push_docker_image(step, repo_name, region_name)
 
-def create_workflow_yaml(repo_name, steps=None, dependencies=None, deployment_step=None, deployment_port=None, name=None, region_name=None):
+def create_workflow_yaml(steps=None, dependencies=None, deployment_step=None, deployment_port=None, name=None, region_name=None):
     dag_tasks = []
     container_templates = []
 
@@ -281,7 +281,7 @@ echo "End point: $SERVICE_IP"'''
 
 
 def launch(args):
-    containerize_steps(args.repo, args.steps, args.region_name)
+    containerize_steps(args.steps, args.region_name)
 
 def parse_dependencies(dependencies_str):
     dependencies = {}
@@ -317,7 +317,7 @@ def deploy(args):
 
     dependencies = parse_dependencies(args.dependencies)
 
-    yaml_file = create_workflow_yaml(args.repo, steps=args.steps, dependencies=dependencies, deployment_step=args.deployment, deployment_port=args.deployment_port, name=args.name, region_name=args.region_name)
+    yaml_file = create_workflow_yaml(steps=args.steps, dependencies=dependencies, deployment_step=args.deployment, deployment_port=args.deployment_port, name=args.name, region_name=args.region_name)
 
     with open(args.output, "w") as f:
         f.write(yaml_file)
@@ -335,14 +335,14 @@ def main():
 
     # Launch subcommand
     parser_launch = subparsers.add_parser("launch", help="Containerize steps and push Docker images to the repository")
-    parser_launch.add_argument("--repo", required=True, help="Container registry repository name")
+    # parser_launch.add_argument("--repo", required=True, help="Container registry repository name")
     parser_launch.add_argument("--steps", required=True, nargs="+", help="List of step names")
     parser_launch.add_argument("--region_name", default="us-east-1", help="Container registry region name")
     parser_launch.set_defaults(func=launch)
 
     # Deploy subcommand
     parser_deploy = subparsers.add_parser("deploy", help="Deploy the Pipelines")
-    parser_deploy.add_argument("--repo", required=True, help="Container registry repository name")
+    # parser_deploy.add_argument("--repo", required=True, help="Container registry repository name")
     parser_deploy.add_argument("--steps", default=None, nargs="+", help="List of step names")
     parser_deploy.add_argument("--dependencies", default=None, help="Step dependencies in the format: stepA:dep1|dep2,stepB:dep1|dep2|dep3")
     parser_deploy.add_argument("--deployment", default=None, help="Deployment step name, leave blank for no deployment step")
