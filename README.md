@@ -60,7 +60,7 @@ paradigm launch --repo <repo_name> --steps p1 p2 p3 --region_name us-east-1
     - In our example, `p3` is a service that needs to be run at the end of the pipeline. Sort of like an endpoint. Hence, we don't mention is under `--steps`, but rather under `--deployment`. If it the service is shuold be exposed via a port, that should be mentioned uner `--deployment_port`. 
     - `<pipeline_name>` is just any name that you want to give this particualr pipeline. Can be the same as `<repo_name>` too.
 ```
-paradigm deploy --repo <repo_name>  --steps p1 p2 --dependencies "p2:p1,p3:p2|p1" --deployment p3 --deployment_port <if deplyment step has a post exposed> --output workflow.yaml --name <pipeline_name>
+paradigm deploy --repo <repo_name>  --steps p1 p2 --dependencies "p2:p1,p3:p2|p1" --deployment p3 --deployment_port <if deplyment step has a post exposed> --output workflow.yaml --name <pipeline_name> --region_name us-east-1
 ```
 
 ## To Deploy Locally 💻
