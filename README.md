@@ -33,6 +33,33 @@ In a terminal with the above kubectl access, follow the below steps.
 - Finally apply permissions for service account
     - `kubectl apply -f rbac.yaml` 
 
+### Now let's move into your ML project folder
+
+Your folder can contain one or more scripts/notebooks that you want to execute as steps in an ML pipeline.
+
+- The preferred directory structure should be as follows. In the below example, `p1, p2 and p3` represent any python script or notebook you have. (Refer the [examples/basic](./examples/basic))
+    - IMPORTANT - note the `requirements.<file name>` files. You have to create a txt with the specific naming convention **only for the scripts or notebooks that need have additional dependencies**. It should include all the dependecies that are required for each step. (Refer the [examples/basic](./examples/basic)). We promise this is the only file addition before taking your ML code to prodution.
+```
+    - 📁 project_root
+        - 📄 p1.py
+        - 📄 p2.ipynb
+        - 📄 p3.py
+        - 📄 requirements.p1
+        - 📄 requirements.p3
+```
+
+- Now we are ready to let Paradigm get the code ready before deploying to the Kubernetes cluster. Include the scripts/notebook you want as steps in the below command. Choose any name as `<repo_name>` for the pipeline steps.
+```
+paradigm launch --repo <repo_name> --steps p1 p2 p3 --region_name "us-east-1"
+```
+- To the final step. Deploy the pipeline with the below command.
+    - `<repo_name>` should be the same as above
+    - `--dependencies "p2:p1,p3:p2|p1"` defines the graph stucture on how the steps should be run. In this example, we are infomring that step `p2` is dependent on `p1` and step `p3` is actually depending on both `p2` and `p1`. 
+    - In our example, `p3` is a service that needs to be run at the end of the pipeline. Sort of like an endpoint. Hence, we don't mention is under `--steps`, but rather under `--deployment`. If it the service is shuold be exposed via a port, that should be mentioned uner `--deployment_port`. 
+    - `<pipeline_name>` is just any name that you want to give this particualr pipeline. Can be the same as `<repo_name>` too.
+```
+paradigm deploy --repo <repo_name>  --steps p1 p2 --dependencies "p2:p1,p3:p2|p1" --deployment p3 --deployment_port <if deplyment step has a post exposed> --output workflow.yaml --name <pipeline_name>
+```
 
 ## To Deploy Locally 💻
 
