@@ -93,7 +93,7 @@ CMD ["python", "./{step}.py"]
     client.login(username, password, registry=registry, reauth=True)
 
     # Tag the image
-    docker_image = client.images.get(f"{step}")
+    docker_image = client.images.get(f"{repo_name}/{step}")
     docker_image.tag(f"{repo_name}/{step}", tag="latest")
 
     # Push the image
