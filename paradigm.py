@@ -23,9 +23,9 @@ def convert_ipynb_to_py(input_file, step):
                 output.write(code)
                 output.write("\n\n")
 
-def build_and_push_docker_image(step, repo_name):
+def build_and_push_docker_image(step):
     client = docker.from_env()
-    image_tag = f"{repo_name}/{step}:latest"
+    image_tag = f"{step}:latest"
 
     # Create step directory if not exists
     step_dir = f"./{step}"
@@ -69,18 +69,14 @@ CMD ["python", "./{step}.py"]
 
     print(f"Building Docker image: {image_tag}")
     image, _ = client.images.build(path=step_dir, tag=image_tag)
-    # print("Pushing Docker image...")
-    # client.images.push(repo_name, tag=f"{step}:latest")
-    # client.images.push(f"{repo_name}/{step}", tag="latest", stream=True, decode=True)
-    # print(f"Image {image_tag} pushed successfully")
 
-def containerize_steps(repo_name, steps):
+def containerize_steps(steps):
     for step in steps:
         if not os.path.exists(step):
             os.mkdir(step)
-        build_and_push_docker_image(step, repo_name)
+        build_and_push_docker_image(step)
 
-def create_workflow_yaml(repo_name, steps=None, dependencies=None, deployment_step=None, deployment_port=None, name=None):
+def create_workflow_yaml(steps=None, dependencies=None, deployment_step=None, deployment_port=None, name=None):
     dag_tasks = []
     container_templates = []
 
@@ -100,7 +96,7 @@ def create_workflow_yaml(repo_name, steps=None, dependencies=None, deployment_st
             container_templates.append({
                 "name": step,
                 "container": {
-                    "image": f"{repo_name}/{step}:latest",
+                    "image": f"{step}:latest",
                     "command": ["python", f"{step}.py"],
                     "imagePullPolicy": "IfNotPresent"
                 }
@@ -166,7 +162,7 @@ spec:
     spec:
       containers:
       - name: {deployment_step}
-        image: {repo_name}/{deployment_step}:latest
+        image: {deployment_step}:latest
         ports:
         - containerPort: {deployment_port}
         imagePullPolicy: IfNotPresent
@@ -199,7 +195,7 @@ EOF"""
 
 def launch(args):
     spinner.start()
-    containerize_steps(args.repo, args.steps)
+    containerize_steps(args.steps)
     spinner.stop()
 
 def parse_dependencies(dependencies_str):
@@ -269,7 +265,7 @@ def deploy(args):
 
     dependencies = parse_dependencies(args.dependencies)
 
-    yaml_file = create_workflow_yaml(args.repo, steps=args.steps, dependencies=dependencies, deployment_step=args.deployment, deployment_port=args.deployment_port, name=args.name)
+    yaml_file = create_workflow_yaml(steps=args.steps, dependencies=dependencies, deployment_step=args.deployment, deployment_port=args.deployment_port, name=args.name)
 
     with open(args.output, "w") as f:
         f.write(yaml_file)
@@ -290,13 +286,13 @@ def main():
 
     # Launch subcommand
     parser_launch = subparsers.add_parser("launch", help="Containerize steps and push Docker images to the repository")
-    parser_launch.add_argument("--repo", required=True, help="Container registry repository name")
+    # parser_launch.add_argument("--repo", required=True, help="Container registry repository name")
     parser_launch.add_argument("--steps", required=True, nargs="+", help="List of step names")
     parser_launch.set_defaults(func=launch)
 
     # Deploy subcommand
     parser_deploy = subparsers.add_parser("deploy", help="Deploy the Pipelines")
-    parser_deploy.add_argument("--repo", required=True, help="Container registry repository name")
+    # parser_deploy.add_argument("--repo", required=True, help="Container registry repository name")
     parser_deploy.add_argument("--steps", default=None, nargs="+", help="List of step names")
     parser_deploy.add_argument("--dependencies", default=None, help="Step dependencies in the format: stepA:dep1|dep2,stepB:dep1|dep2|dep3")
     parser_deploy.add_argument("--deployment", default=None, help="Deployment step name, leave blank for no deployment step")
