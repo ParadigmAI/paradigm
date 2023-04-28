@@ -211,9 +211,6 @@ def parse_dependencies(dependencies_str):
 def run_argo_submit(file_path):
     command = ['argo', 'submit', '-n', 'argo', file_path]
 
-    spinner = Halo(text='Submitting Workflow... ⚡', spinner='dots12')
-
-    spinner.start()
     try:
         result = subprocess.run(command, capture_output=True, text=True, check=True)
         print("Output:\n", result.stdout)
@@ -224,7 +221,22 @@ def run_argo_submit(file_path):
         print("Output:\n", e.output)
         print("Error:\n", e.stderr)
     
-    spinner.stop()
+
+def get_logs_from_workflow():
+    namespace = 'argo'
+
+    # Execute the first command and get the name of the latest workflow.
+    argo_list_cmd = f'argo list -n {namespace} --output json'
+    argo_list_output = subprocess.check_output(argo_list_cmd, shell=True, text=True)
+    workflows = json.loads(argo_list_output)
+    workflow_name = max(workflows, key=lambda x: x['metadata']['creationTimestamp'])['metadata']['name']
+
+    # Execute the second command and get the logs of the latest workflow.
+    argo_logs_cmd = f'argo logs -n {namespace} {workflow_name}'
+    argo_logs_output = subprocess.check_output(argo_logs_cmd, shell=True, text=True)
+
+    # Print the output of the second command while preserving the formatting.
+    print(argo_logs_output)
 
 def deploy(args):
     # dependencies = []
@@ -250,6 +262,9 @@ def deploy(args):
     spinner.stop()
 
     print(f"Completed running the Workflow")
+
+    print("Logs**")
+    get_logs_from_workflow()
 
 def main():
     parser = argparse.ArgumentParser(description="Paradigm: Fastest ML Pipelines")
