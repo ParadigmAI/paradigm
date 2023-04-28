@@ -1,6 +1,11 @@
-# Paradigm ⚡
+<p align="center">
+  <img src="./utils/images/logo_slogan.png" height="250">
+</p>
 
-[![version](https://img.shields.io/badge/version-0.1-yellow)]() [![discord](https://img.shields.io/badge/chat-discord-blueviolet)]()
+<p align="center">
+    <a href="#"><img alt="version" src="https://img.shields.io/badge/version-0.1.0-yellow"></a>
+    <a href="#"><img alt="discord" src="https://img.shields.io/badge/chat-discord-blueviolet"></a>
+</p>
 
 Paradigm is a light-weight, lightning-fast, supremely adaptable tool, effortlessly packaging your ML code into robust pipelines for seamless deployment on Kubernetes. Bypass the need for code refactoring as Paradigm intelligently interprets your Python notebooks and scripts, priming them for scalable production. Paradigm is your ultimate ally in ML deployment, merging unparalleled speed, adaptability, and simplicity into one package.
 
