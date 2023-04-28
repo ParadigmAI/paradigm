@@ -213,17 +213,50 @@ def parse_dependencies(dependencies_str):
 
 
 def run_argo_submit(file_path):
-    command = ['argo', 'submit', '-n', 'argo', '--watch', file_path]
+    command = ['argo', 'submit', '-n', 'argo', file_path]
+
+    spinner = Halo(text='Submitting Workflow... ⚡', spinner='dots12')
 
     try:
-        result = subprocess.run(command, capture_output=True, text=True, check=True)
-        print("Output:\n", result.stdout)
-        print("Error (if any):\n", result.stderr)
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+        # Get workflow name from argo submit command
+        while True:
+            output = process.stdout.readline()
+            if output == '' and process.poll() is not None:
+                break
+            if "name:" in output:
+                workflow_name = output.split("name:")[1].strip()
+
+        rc = process.poll()
+
+        # Once the workflow is submitted, follow the logs
+        if workflow_name:
+            print(f"Following logs for workflow: {workflow_name}")
+            command = ['argo', 'logs', '-n', 'argo', '-f', workflow_name]
+            process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+            spinner.text = "Running Workflow... ⚡"
+            # Print output in real-time
+            while True:
+                output = process.stdout.readline()
+                error = process.stderr.readline()
+
+                if output == '' and process.poll() is not None:
+                    break
+                if output:
+                    print("Output:", output.strip())
+                if error:
+                    print("Error:", error.strip())
+
+            rc = process.poll()
 
     except subprocess.CalledProcessError as e:
         print("Error executing command:", e)
         print("Output:\n", e.output)
         print("Error:\n", e.stderr)
+
+    return rc
 
 
 def deploy(args):

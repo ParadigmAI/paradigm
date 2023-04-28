@@ -294,7 +294,6 @@ def run_argo_submit(file_path):
     command = ['argo', 'submit', '-n', 'argo', file_path]
 
     spinner = Halo(text='Submitting Workflow... ⚡', spinner='dots12')
-    spinner.start()
 
     try:
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -334,8 +333,6 @@ def run_argo_submit(file_path):
         print("Error executing command:", e)
         print("Output:\n", e.output)
         print("Error:\n", e.stderr)
-    finally:
-        spinner.stop()
 
     return rc
 
