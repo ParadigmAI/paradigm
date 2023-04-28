@@ -11,6 +11,12 @@
 
 Paradigm is a light-weight, lightning-fast, supremely adaptable tool, effortlessly packaging your ML code into robust pipelines for seamless deployment on Kubernetes. Bypass the need for code refactoring as Paradigm intelligently interprets your Python notebooks and scripts, priming them for scalable production. Paradigm is your ultimate ally in ML deployment, merging unparalleled speed, adaptability, and simplicity into one package.
 
+# Deploy to Kubernetes in just 2 steps
+
+```console
+$ paradigm launch --step <your-project-notebooks-or-scripts>
+$ paradigm deploy
+```
 
 # Quickstart
 
