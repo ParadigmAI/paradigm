@@ -114,17 +114,16 @@ Your folder can contain one or more scripts/notebooks that you want to execute a
         - 📄 requirements.p3
 ```
 
-- Now we are ready to let Paradigm get the code ready before deploying to the Kubernetes cluster. Include the scripts/notebook you want as steps in the below command. Choose any name as `<repo_name>` for the pipeline steps.
+- Now we are ready to let Paradigm get the code ready before deploying to the Kubernetes cluster. Include the scripts/notebook you want as steps in the below command.
 ```
-paradigm launch --repo <repo_name> --steps p1 p2 p3
+paradigm launch --steps p1 p2 p3
 ```
 - To the final step. Deploy the pipeline with the below command.
-    - `<repo_name>` should be the same as above
     - `--dependencies "p2:p1,p3:p2|p1"` defines the graph stucture on how the steps should be run. In this example, we are infomring that step `p2` is dependent on `p1` and step `p3` is actually depending on both `p2` and `p1`. 
     - In our example, `p3` is a service that needs to be run at the end of the pipeline. Sort of like an endpoint. Hence, we don't mention is under `--steps`, but rather under `--deployment`. If it the service is shuold be exposed via a port, that should be mentioned uner `--deployment_port`. 
-    - `<pipeline_name>` is just any name that you want to give this particualr pipeline. Can be the same as `<repo_name>` too.
+    - `<pipeline_name>` is just any name that you want to give this particualr pipeline.
 ```
-paradigm deploy --repo <repo_name>  --steps p1 p2 --dependencies "p2:p1,p3:p2|p1" --deployment p3 --deployment_port <if deplyment step has a post exposed> --output workflow.yaml --name <pipeline_name>
+paradigm deploy --steps p1 p2 --dependencies "p2:p1,p3:p2|p1" --deployment p3 --deployment_port <if deplyment step has a post exposed> --output workflow.yaml --name <pipeline_name>
 ```
 - (OPTIONAL) If you want to access the service that is deployed in the previous set (for example an API endpoint), the following code has to be run since we're working inside minikube. 
 
