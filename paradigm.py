@@ -6,6 +6,10 @@ import shutil
 import sys
 import subprocess
 import json
+from halo import Halo
+
+
+spinner = Halo(text='⚡ Processing...', spinner='dots12')
 
 def convert_ipynb_to_py(input_file, step):
     output_file = f"./{step}/" + os.path.splitext(input_file)[0] + ".py"
@@ -194,7 +198,9 @@ EOF"""
 
 
 def launch(args):
+    spinner.start()
     containerize_steps(args.repo, args.steps)
+    spinner.stop()
 
 def parse_dependencies(dependencies_str):
     dependencies = {}
@@ -238,7 +244,10 @@ def deploy(args):
     print(f"Generated Argo Workflow YAML file: {args.output}")
 
     print("Sumitting Workflow to Cluster")
+    print("Waiting for progress and logs")
+    spinner.start()
     run_argo_submit(args.output)
+    spinner.stop()
 
     print(f"Completed running the Workflow")
 
