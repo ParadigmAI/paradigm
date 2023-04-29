@@ -249,7 +249,7 @@ EOF"""
                 "source": f'''SERVICE_NAME=deploy-{deployment_step}
 while [ -z $SERVICE_IP ]; do
   echo "Waiting for end point..."
-  SERVICE_IP=$(kubectl get svc -n argo $SERVICE_NAME --output jsonpath='{{.status.loadBalancer.ingress[0].hostname}}')
+  SERVICE_IP=$(kubectl get svc -n paradigm $SERVICE_NAME --output jsonpath='{{.status.loadBalancer.ingress[0].hostname}}')
   sleep 2
 done
 echo "End point: $SERVICE_IP"'''
@@ -266,7 +266,7 @@ echo "End point: $SERVICE_IP"'''
         },
         "spec": {
             "entrypoint": "dag-steps",
-            "serviceAccountName": "argo-workflow",
+            "serviceAccountName": "paradigm-workflow",
             "templates": templates
         }
     }
@@ -290,54 +290,8 @@ def parse_dependencies(dependencies_str):
     return dependencies
 
 
-# def run_argo_submit(file_path):
-#     command = ['argo', 'submit', '-n', 'argo', file_path]
-
-#     spinner = Halo(text='Submitting Workflow... ⚡', spinner='dots12')
-
-#     try:
-#         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-
-#         # Get workflow name from argo submit command
-#         while True:
-#             output = process.stdout.readline()
-#             if output == '' and process.poll() is not None:
-#                 break
-#             if "name:" in output:
-#                 workflow_name = output.split("name:")[1].strip()
-
-#         rc = process.poll()
-
-#         # Once the workflow is submitted, follow the logs
-#         if workflow_name:
-#             print(f"Following logs for workflow: {workflow_name}")
-#             command = ['argo', 'logs', '-n', 'argo', '-f', workflow_name]
-#             process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-
-#             spinner.text = "Running Workflow... ⚡"
-#             # Print output in real-time
-#             while True:
-#                 output = process.stdout.readline()
-#                 error = process.stderr.readline()
-
-#                 if output == '' and process.poll() is not None:
-#                     break
-#                 if output:
-#                     print("Output:", output.strip())
-#                 if error:
-#                     print("Error:", error.strip())
-
-#             rc = process.poll()
-
-#     except subprocess.CalledProcessError as e:
-#         print("Error executing command:", e)
-#         print("Output:\n", e.output)
-#         print("Error:\n", e.stderr)
-
-#     return rc
-
 def run_argo_submit(file_path):
-    command = ['argo', 'submit', '-n', 'argo', '--watch', file_path]
+    command = ['argo', 'submit', '-n', 'paradigm', '--watch', file_path]
 
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
@@ -351,7 +305,7 @@ def run_argo_submit(file_path):
             print(output.strip().decode('utf-8'))
 
 def get_logs_from_workflow():
-    namespace = 'argo'
+    namespace = 'paradigm'
 
     # Execute the first command and get the name of the latest workflow.
     argo_list_cmd = f'argo list -n {namespace} --output json'
@@ -381,7 +335,7 @@ def deploy(args):
     with open(args.output, "w") as f:
         f.write(yaml_file)
 
-    print(f"Generated Argo Workflow YAML file: {args.output}")
+    print(f"Generated Paradigm Workflow YAML file: {args.output}")
 
     print("Sumitting Workflow to Cluster")
     print("Waiting for progress and logs")

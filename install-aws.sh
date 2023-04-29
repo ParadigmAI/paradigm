@@ -2,17 +2,17 @@
 
 # Install Argo Workflows CLI
 echo "Installing..."
-kubectl create namespace argo
-kubectl apply -n argo -f https://github.com/argoproj/argo-workflows/releases/download/v3.4.7/install.yaml
+kubectl create namespace paradigm
+kubectl apply -n paradigm -f https://github.com/argoproj/argo-workflows/releases/download/v3.4.7/install.yaml
 kubectl patch deployment \
   argo-server \
-  --namespace argo \
+  --namespace paradigm \
   --type='json' \
   -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/args", "value": [
   "server",
   "--auth-mode=server"
 ]}]'
-# kubectl -n argo port-forward deployment/argo-server 2746:2746
+# kubectl -n paradigm port-forward deployment/argo-server 2746:2746
 
 # Detect the running operating system
 os_name="$(uname)"

@@ -184,7 +184,7 @@ EOF"""
         },
         "spec": {
             "entrypoint": "dag-steps",
-            "serviceAccountName": "argo-workflow",
+            "serviceAccountName": "paradigm-workflow",
             "templates": templates
         }
     }
@@ -209,7 +209,7 @@ def parse_dependencies(dependencies_str):
 
 
 def run_argo_submit(file_path):
-    command = ['argo', 'submit', '-n', 'argo', '--watch', file_path]
+    command = ['argo', 'submit', '-n', 'paradigm', '--watch', file_path]
 
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
@@ -224,7 +224,7 @@ def run_argo_submit(file_path):
     
 
 def get_logs_from_workflow():
-    namespace = 'argo'
+    namespace = 'paradigm'
 
     # Execute the first command and get the name of the latest workflow.
     argo_list_cmd = f'argo list -n {namespace} --output json'
@@ -254,7 +254,7 @@ def deploy(args):
     with open(args.output, "w") as f:
         f.write(yaml_file)
 
-    print(f"Generated Argo Workflow YAML file: {args.output}")
+    print(f"Generated Paradigm Workflow YAML file: {args.output}")
 
     print("Sumitting Workflow to Cluster")
     print("Waiting for progress and logs")
