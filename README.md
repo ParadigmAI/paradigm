@@ -13,10 +13,10 @@ Paradigm is a light-weight, lightning-fast, supremely adaptable tool, effortless
 
 # Paradigm in Action
 ## Terminal View
-![](utils/images/prdm-demo-2.gif)
+![](utils/images/prdm-demo-2.mp4)
 
 ## DAG View
-![](utils/images/prdm-demo-1.gif)
+![](utils/images/prdm-demo-1.mp4)
 
 
 # Deploy an ML pipeline in just 2 steps
