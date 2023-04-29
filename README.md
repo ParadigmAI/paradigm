@@ -11,6 +11,14 @@
 
 Paradigm is a light-weight, lightning-fast, supremely adaptable tool, effortlessly packaging your ML code into robust pipelines for seamless deployment on Kubernetes. Bypass the need for code refactoring as Paradigm intelligently interprets your Python notebooks and scripts, priming them for scalable production. Paradigm is your ultimate ally in ML deployment, merging unparalleled speed, adaptability, and simplicity into one package.
 
+# Paradigm in Action
+## Terminal View
+<iframe width="560" height="315" src="https://www.youtube.com/embed/pzHV42Ys_Gc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+## DAG View
+<iframe width="560" height="315" src="https://www.youtube.com/embed/NxwdcHxnW5A" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+
 # Deploy an ML pipeline in just 2 steps
 
 ```console
@@ -158,7 +166,7 @@ paradigm deploy --steps p1 p2 --dependencies "p2:p1,p3:p2|p1" --deployment p3 --
 -  (OPTIONAL) You can use Argo UI to observe all pipelines and get logs. For that, first make it accessible via your browser by running the below command. 
     - `kubectl -n paradigm port-forward deployment/argo-server 2746:2746`
     - Now I your local browser, go to `http://localhost:2746`
-    
+
 - (OPTIONAL) In case you want to delete the running service and deployment, use the following commands. `<deployment_step>` is the make of the file that has the deolyment code.
     - `kubectl delete deployment deploy-<deployment_step> -n paradigm`
     - `kubectl delete service deploy-<deployment_step> -n paradigm`
