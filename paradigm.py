@@ -209,17 +209,18 @@ def parse_dependencies(dependencies_str):
 
 
 def run_argo_submit(file_path):
-    command = ['argo', 'submit', '-n', 'argo', file_path]
+    command = ['argo', 'submit', '-n', 'argo', '--watch', file_path]
 
-    try:
-        result = subprocess.run(command, capture_output=True, text=True, check=True)
-        print("Output:\n", result.stdout)
-        print("Error (if any):\n", result.stderr)
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
-    except subprocess.CalledProcessError as e:
-        print("Error executing command:", e)
-        print("Output:\n", e.output)
-        print("Error:\n", e.stderr)
+    while True:
+        output = process.stdout.readline()
+
+        if process.poll() is not None:
+            break
+
+        if output:
+            print(output.strip().decode('utf-8'))
     
 
 def get_logs_from_workflow():
