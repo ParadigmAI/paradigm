@@ -125,8 +125,10 @@ In a terminal with the above kubectl access, follow the below steps.
 
 Your folder can contain one or more scripts/notebooks that you want to execute as steps in an ML pipeline.
 
-- The preferred directory structure should be as follows. In the below example, `p1, p2 and p3` represent any python script or notebook you have. (Refer the [examples/basic](./examples/basic))
-    - IMPORTANT - note the `requirements.<file name>` files. You have to create a txt with the specific naming convention **only for the scripts or notebooks that need have additional dependencies**. It should include all the dependecies that are required for each step. (Refer the [examples/basic](./examples/basic)). We promise this is the only file addition before taking your ML code to prodution.
+**From here we follow a basic example project just to make it easier to exaplin the commands. Please change the necessary parameters according to your project**
+- The preferred directory structure should be as follows. In the below example, `p1, p2 and p3` represent the names of the python scripts or notebooks you have. (Refer the [examples/basic](./examples/basic))
+    - IMPORTANT - Note the `requirements.<file name>` files. You have to create a txt with that specific naming **only for the scripts or notebooks that have additional dependencies**. It becomes the `requirements.txt` for that step. We promise this is the only file addition before taking your ML code to prodution.
+    - Example:
 ```
     - 📁 project_root
         - 📄 p1.py
@@ -136,18 +138,27 @@ Your folder can contain one or more scripts/notebooks that you want to execute a
         - 📄 requirements.p3
 ```
 
-- Now we are ready to let Paradigm get the code ready before deploying to the Kubernetes cluster. Include the scripts/notebook you want as steps in the below command.
+- Now we are ready to let Paradigm get things ready before deploying to Kubernetes. Include the scripts/notebook you want as steps in the below command. This command basically containerizes your code.
 ```
 paradigm launch --steps p1 p2 p3 --region_name us-east-1
 ```
-- To the final step. Deploy the pipeline with the below command.
-    - `--dependencies "p2:p1,p3:p2|p1"` defines the graph stucture on how the steps should be run. In this example, we are infomring that step `p2` is dependent on `p1` and step `p3` is actually depending on both `p2` and `p1`. 
-    - In our example, `p3` is a service that needs to be run at the end of the pipeline. Sort of like an endpoint. Hence, we don't mention is under `--steps`, but rather under `--deployment`. If it the service is shuold be exposed via a port, that should be mentioned uner `--deployment_port`. 
-    - `<pipeline_name>` is just any name that you want to give this particualr pipeline.
-```
-paradigm deploy --steps p1 p2 --dependencies "p2:p1,p3:p2|p1" --deployment p3 --deployment_port <if deplyment step has a post exposed> --output workflow.yaml --name <pipeline_name> --region_name us-east-1
-```
+- As the final step, deploy the pipeline with the below command.
 
+```
+paradigm deploy --steps p1 p2 --dependencies "p2:p1,p3:p2|p1" --deployment p3 --deployment_port 8000 --output workflow.yaml --name pipe1 --region_name us-east-1
+```
+- In the above command: 
+    - `--steps` should speicify all steps, except any step that should be run as a service, e.g., an API endpoint. 
+    - `--dependencies "p2:p1,p3:p2|p1"` defines the graph stucture (DAG) on how the steps should be run. In this example, we are stating that step `p2` is dependent on `p1` and step `p3` is dependent on both `p2` and `p1`. 
+    - `--deployment p3` defines a service that needs to be run at the end of the pipeline. Hence, we don't mention is under `--steps`. 
+    - `--deployment_port` is defined if the above service is exposed via a specific port internally. 
+    - `--name` can be any name that you want to give this particualr pipeline
+    - `--region_name` is the aws region that you want to use
+
+-  (OPTIONAL) You can use Argo UI to observe all pipelines and get logs. For that, first make it accessible via your browser by running the below command. 
+    - `kubectl -n paradigm port-forward deployment/argo-server 2746:2746`
+    - Now I your local browser, go to `http://localhost:2746`
+    
 - (OPTIONAL) In case you want to delete the running service and deployment, use the following commands. `<deployment_step>` is the make of the file that has the deolyment code.
     - `kubectl delete deployment deploy-<deployment_step> -n paradigm`
     - `kubectl delete service deploy-<deployment_step> -n paradigm`
