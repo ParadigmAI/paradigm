@@ -40,16 +40,12 @@ You need a Kubernetes cluster and `kubectl` set up to be able to access that clu
     - `git clone https://github.com/ParadigmAI/paradigm.git`
 - Go into the directory 
     - `cd paradigm`
-- Rename setup-local.py as setup.py, Use the below commands
-    - `mv setup-local.py setup.py`
 - Make the installation script executable 
     - `chmod +x install.sh`
 - Run the intallation script 
     - `./install.sh`
 - Validate if paradigm was properly installed
     - `paradigm --help`
-- Finally apply permissions for service account
-    - `kubectl apply -f rbac.yaml` 
 
 ### Now let's move into your ML project folder
 
@@ -118,16 +114,12 @@ In a terminal with the above kubectl access, follow the below steps.
     - `git clone https://github.com/ParadigmAI/paradigm.git`
 - Go into the directory 
     - `cd paradigm`
-- Rename setup-aws.py as setup.py
-    - `mv setup-aws.py setup.py`
 - Make the installation script executable 
     - `chmod +x install-aws.sh`
 - Run the intallation script 
     - `./install-aws.sh`
 - Validate if paradigm was properly installed
     - `paradigm --help`
-- Finally apply permissions for service account
-    - `kubectl apply -f rbac.yaml` 
 
 ### Now let's move into your ML project folder
 

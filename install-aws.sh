@@ -2,7 +2,9 @@
 
 # Install Argo Workflows CLI
 echo "Installing..."
+mv setup-aws.py setup.py
 kubectl create namespace paradigm
+kubectl apply -f rbac.yaml
 kubectl apply -n paradigm -f https://github.com/argoproj/argo-workflows/releases/download/v3.4.7/install.yaml
 kubectl patch deployment \
   argo-server \
