@@ -86,7 +86,7 @@ paradigm deploy --steps p1 p2 --dependencies "p2:p1,p3:p2|p1" --deployment p3 --
 
 -  (OPTIONAL) You can use Argo UI to observe all pipelines and get logs. For that, first make it accessible via your browser by running the below command. 
     - `kubectl -n paradigm port-forward deployment/argo-server 2746:2746`
-    - Now I your local browser, go to `http://localhost:2746`
+    - Now in your local browser, go to `http://localhost:2746`
 
 - (OPTIONAL) To access the service that is deployed in the previous set (for example an API endpoint), run the following code since we're working inside minikube. 
 
