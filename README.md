@@ -169,6 +169,13 @@ paradigm deploy --steps p1 p2 --dependencies "p2:p1,p3:p2|p1" --deployment p3 --
 
 <br/><br/>
 
+## Learn more
+
+| Section | Description |
+|-|-|
+| [Documentation](https://paradigmai.github.io/paradigm-docs/) | Full documentation and tutorials |
+| [Basic Tutorial](https://paradigmai.github.io/paradigm-docs/Tutorials/basic_example/) | The simplest example with Paradigm |
+
 
 ## Contributing
 
