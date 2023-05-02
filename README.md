@@ -6,7 +6,7 @@
     <a href="#"><img alt="version" src="https://img.shields.io/badge/version-0.1.0-yellow"></a>
     <a href="https://discord.gg/KxHPMsBdyp" target="_blank"><img alt="discord" src="https://img.shields.io/badge/chat-discord-blueviolet"></a>
     <a href="mailto:paradigmdev23@gmail.com" target="_blank"><img alt="email" src="https://img.shields.io/badge/contact-email-brightgreen"></a>
-    <a href="https://www.paradigmai.net/" target="_blank"><img alt="website" src="https://img.shields.io/badge/website-live-green"></a>
+    <a href="https://www.paradigmai.net" target="_blank"><img alt="website" src="https://img.shields.io/badge/website-live-green"></a>
 </p>
 
 🌟 **With Paradigm, you ML code is production-ready from the beginning**
