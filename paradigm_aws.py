@@ -111,11 +111,11 @@ CMD ["python", "./{step}.py"]
     # client.images.push(f"{repo_name}/{step}", tag="latest", stream=True, decode=True)
     # print(f"Image {image_tag} pushed successfully")
 
-def containerize_steps(repo_name, steps, region_name):
+def containerize_steps(steps, region_name):
     for step in steps:
         if not os.path.exists(step):
             os.mkdir(step)
-        build_and_push_docker_image(step, repo_name, region_name)
+        build_and_push_docker_image(step, region_name)
 
 def create_workflow_yaml(steps=None, dependencies=None, deployment_step=None, deployment_port=None, name=None, region_name=None):
     dag_tasks = []
