@@ -22,7 +22,6 @@ Official website - [paradigmai.net](https://www.paradigmai.net)
 ## DAG View
 ![](utils/images/prdm-demo-1.gif)
 
-
 # Deploy an ML pipeline in just 2 steps
 
 ```console
@@ -31,6 +30,11 @@ $ paradigm deploy
 ```
 
 # Quickstart
+
+## Video
+[![IMAGE_ALT_TEXT](utils/images/tutorial_thumbnail.png)](https://youtu.be/mihz5iaJ3FY)
+
+<br></br>
 
 ## Try Locally 💻
 
