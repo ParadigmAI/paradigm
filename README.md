@@ -32,7 +32,7 @@ $ paradigm deploy
 # Quickstart
 
 ## Video
-[![IMAGE_ALT_TEXT](utils/images/tutorial_thumbnail.png)](https://youtu.be/mihz5iaJ3FY)
+[![paradigm](utils/images/tutorial_thumbnail.png)](https://youtu.be/mihz5iaJ3FY)
 
 <br></br>
 
