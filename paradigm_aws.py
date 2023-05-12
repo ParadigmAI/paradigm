@@ -232,6 +232,11 @@ spec:
         ports:
         - containerPort: {deployment_port}
         imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: "2Gi"
+          limits:
+            memory: "2Gi"
 EOF"""
                 
             },
