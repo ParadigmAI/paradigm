@@ -117,7 +117,7 @@ def containerize_steps(steps, region_name):
             os.mkdir(step)
         build_and_push_docker_image(step, region_name)
 
-def create_workflow_yaml(steps=None, dependencies=None, deployment_step=None, deployment_port=None, name=None, region_name=None):
+def create_workflow_yaml(steps=None, dependencies=None, deployment_step=None, deployment_port=None, deployment_memory=None,name=None, region_name=None):
     dag_tasks = []
     container_templates = []
 
@@ -234,9 +234,9 @@ spec:
         imagePullPolicy: IfNotPresent
         resources:
           requests:
-            memory: "2Gi"
+            memory: {deployment_memory}
           limits:
-            memory: "2Gi"
+            memory: {deployment_memory}
 EOF"""
                 
             },
@@ -335,7 +335,7 @@ def deploy(args):
 
     dependencies = parse_dependencies(args.dependencies)
 
-    yaml_file = create_workflow_yaml(steps=args.steps, dependencies=dependencies, deployment_step=args.deployment, deployment_port=args.deployment_port, name=args.name, region_name=args.region_name)
+    yaml_file = create_workflow_yaml(steps=args.steps, dependencies=dependencies, deployment_step=args.deployment, deployment_port=args.deployment_port, deployment_memory=args.deployment_memory, name=args.name, region_name=args.region_name)
 
     with open(args.output, "w") as f:
         f.write(yaml_file)
@@ -371,6 +371,7 @@ def main():
     parser_deploy.add_argument("--dependencies", default=None, help="Step dependencies in the format: stepA:dep1|dep2,stepB:dep1|dep2|dep3")
     parser_deploy.add_argument("--deployment", default=None, help="Deployment step name, leave blank for no deployment step")
     parser_deploy.add_argument("--deployment_port", default=None, help="The port number of the deployment app")
+    parser_deploy.add_argument("--deployment_memory", default="2Gi", help="Memory required for the deployment step")
     parser_deploy.add_argument("--output", default="workflow.yaml", help="Output YAML file name")
     parser_deploy.add_argument("--name", default="paradigm-pipeline", help="Name of the pipeline")
     parser_deploy.add_argument("--region_name", default="us-east-1", help="Container registry region name")
