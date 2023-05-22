@@ -98,7 +98,7 @@ def create_workflow_yaml(steps=None, dependencies=None, deployment_step=None, de
                 "container": {
                     "image": f"{step}:latest",
                     "command": ["python", f"{step}.py"],
-                    "imagePullPolicy": "IfNotPresent"
+                    "imagePullPolicy": "Always"
                 }
             })
 
@@ -165,7 +165,7 @@ spec:
         image: {deployment_step}:latest
         ports:
         - containerPort: {deployment_port}
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
 EOF"""
                 
             },
