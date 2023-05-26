@@ -156,7 +156,15 @@ def create_workflow_yaml(steps=None, dependencies=None, deployment_step=None, de
                 "container": {
                     "image": f"{registry}/{step}:latest",
                     "command": ["python", f"{step}.py"],
-                    "imagePullPolicy": "Always"
+                    "imagePullPolicy": "Always",
+                    "resources":{
+                        "requests":{
+                            "memory": f"{deployment_memory}"
+                        },
+                        "limits":{
+                            "memory": f"{deployment_memory}"
+                        }
+                    }
                 }
             })
 
