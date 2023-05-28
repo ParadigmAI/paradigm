@@ -10,6 +10,12 @@ import base64
 import boto3
 from halo import Halo
 
+from datetime import datetime
+
+# Get current date and time
+now = datetime.now()
+timestamp = now.strftime("%Y%m%d%H%M%S")
+
 
 spinner = Halo(text='⚡ Processing...', spinner='dots12')
 
@@ -92,7 +98,7 @@ CMD ["python", "./{step}.py"]
     # Login to ECR
     client.login(username, password, registry=registry, reauth=True)
 
-    image_tag = f"{registry}/{step}:latest"
+    image_tag = f"{registry}/{step}:{timestamp}"
     print(f"Building Docker image: {image_tag}")
     image, _ = client.images.build(path=step_dir, tag=image_tag)
 
@@ -100,15 +106,15 @@ CMD ["python", "./{step}.py"]
 
     # Tag the image
     # docker_image = client.images.get(f"{registry}/{step}")
-    # docker_image.tag(f"{registry}/{step}", tag="latest")
+    # docker_image.tag(f"{registry}/{step}", tag="{timestamp}")
     print(f"Ready to push image - {image_tag}")
 
     # Push the image
-    for line in client.images.push(f"{registry}/{step}", tag="latest", stream=True, decode=True):
+    for line in client.images.push(f"{registry}/{step}", tag="{timestamp}", stream=True, decode=True):
         print(line)
 
-    # client.images.push(repo_name, tag=f"{step}:latest")
-    # client.images.push(f"{repo_name}/{step}", tag="latest", stream=True, decode=True)
+    # client.images.push(repo_name, tag=f"{step}:{timestamp}")
+    # client.images.push(f"{repo_name}/{step}", tag="{timestamp}", stream=True, decode=True)
     # print(f"Image {image_tag} pushed successfully")
 
 def containerize_steps(steps, region_name):
@@ -154,7 +160,7 @@ def create_workflow_yaml(steps=None, dependencies=None, deployment_step=None, de
             container_templates.append({
                 "name": step,
                 "container": {
-                    "image": f"{registry}/{step}:latest",
+                    "image": f"{registry}/{step}:{timestamp}",
                     "command": ["python", f"{step}.py"],
                     "imagePullPolicy": "Always",
                     "resources":{
@@ -236,7 +242,7 @@ spec:
     spec:
       containers:
       - name: {deployment_step}
-        image: {registry}/{deployment_step}:latest
+        image: {registry}/{deployment_step}:{timestamp}
         ports:
         - containerPort: {deployment_port}
         imagePullPolicy: Always
