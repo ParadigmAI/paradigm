@@ -15,6 +15,7 @@ from datetime import datetime
 # Get current date and time
 now = datetime.now()
 timestamp = now.strftime("%Y%m%d%H%M%S")
+timestamp = 'dt' + timestamp
 
 
 spinner = Halo(text='⚡ Processing...', spinner='dots12')
