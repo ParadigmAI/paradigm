@@ -9,8 +9,8 @@ import json
 import base64
 import boto3
 from halo import Halo
-
 from datetime import datetime
+from operator import itemgetter
 
 # Get current date and time
 now = datetime.now()
@@ -31,9 +31,8 @@ def convert_ipynb_to_py(input_file, step):
                 output.write(code)
                 output.write("\n\n")
 
-import boto3
 
-def get_latest_image_tag(repository_name, registry_id):
+def get_latest_image_tag():
     # Boto3 will automatically use the AWS credentials configured by the AWS CLI
     session = boto3.Session()
 
@@ -41,29 +40,30 @@ def get_latest_image_tag(repository_name, registry_id):
     ecr = session.client('ecr')
 
     # Define the repository details
-    repository_name = repository_name
-    registry_id = registry_id
+    repository_name = 'pythia-70m-text-generation'
+    registry_id = '817206259689'
 
     # Get the image details
     response = ecr.describe_images(
         registryId=registry_id,
         repositoryName=repository_name,
-        maxResults=1,
         filter={
             'tagStatus': 'TAGGED'
-        },
-        sort_by='TIMESTAMP',
-        sort_order='DESCENDING'
+        }
     )
 
-    # Extract the latest image details
-    latest_image_details = response['imageDetails'][0]
+    # Sort the image details by creation time in descending order
+    images = sorted(
+        response['imageDetails'], 
+        key=itemgetter('imagePushedAt'),
+        reverse=True
+    )
 
-    # Get the image tags
-    image_tags = latest_image_details['imageTags']
+    # Get the tags of the latest image
+    latest_image_tags = images[0]['imageTags']
 
     # Return the most recent tag
-    return image_tags[0]
+    return latest_image_tags[0]
 
 
 def build_and_push_docker_image(step, region_name):
