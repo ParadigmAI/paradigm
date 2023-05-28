@@ -32,20 +32,18 @@ def convert_ipynb_to_py(input_file, step):
                 output.write("\n\n")
 
 
-def get_latest_image_tag(repository_name, registry_id):
+def get_latest_image_tag(repository_name):
     # Boto3 will automatically use the AWS credentials configured by the AWS CLI
     session = boto3.Session()
 
     # Initialize the ECR client
     ecr = session.client('ecr')
 
-    # Define the repository details
+    # Define the repository name
     repository_name = repository_name
-    registry_id = registry_id
 
     # Get the image details
     response = ecr.describe_images(
-        registryId=registry_id,
         repositoryName=repository_name,
         filter={
             'tagStatus': 'TAGGED'
@@ -182,7 +180,7 @@ def create_workflow_yaml(steps=None, dependencies=None, deployment_step=None, de
     if steps:
         for step in steps:
 
-            latest_image_tag = get_latest_image_tag(registry, step)
+            latest_image_tag = get_latest_image_tag(step)
 
             task_name = f"step-{step}"
             dag_task = {
@@ -224,7 +222,7 @@ def create_workflow_yaml(steps=None, dependencies=None, deployment_step=None, de
 
     if deployment_step:
 
-        latest_image_tag = get_latest_image_tag(registry, deployment_step)
+        latest_image_tag = get_latest_image_tag(deployment_step)
 
         if deployment_step in dependencies:
             deploy_task = {
