@@ -32,7 +32,7 @@ def convert_ipynb_to_py(input_file, step):
                 output.write("\n\n")
 
 
-def get_latest_image_tag():
+def get_latest_image_tag(repository_name, registry_id):
     # Boto3 will automatically use the AWS credentials configured by the AWS CLI
     session = boto3.Session()
 
@@ -40,8 +40,8 @@ def get_latest_image_tag():
     ecr = session.client('ecr')
 
     # Define the repository details
-    repository_name = 'pythia-70m-text-generation'
-    registry_id = '817206259689'
+    repository_name = repository_name
+    registry_id = registry_id
 
     # Get the image details
     response = ecr.describe_images(
