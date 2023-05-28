@@ -15,7 +15,6 @@ from datetime import datetime
 # Get current date and time
 now = datetime.now()
 timestamp = now.strftime("%Y%m%d%H%M%S")
-timestamp = 'dt' + timestamp
 
 
 spinner = Halo(text='⚡ Processing...', spinner='dots12')
@@ -111,7 +110,7 @@ CMD ["python", "./{step}.py"]
     print(f"Ready to push image - {image_tag}")
 
     # Push the image
-    for line in client.images.push(f"{registry}/{step}", tag="{timestamp}", stream=True, decode=True):
+    for line in client.images.push(f"{registry}/{step}", tag=timestamp, stream=True, decode=True):
         print(line)
 
     # client.images.push(repo_name, tag=f"{step}:{timestamp}")
