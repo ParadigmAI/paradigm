@@ -31,6 +31,41 @@ def convert_ipynb_to_py(input_file, step):
                 output.write(code)
                 output.write("\n\n")
 
+import boto3
+
+def get_latest_image_tag(repository_name, registry_id):
+    # Boto3 will automatically use the AWS credentials configured by the AWS CLI
+    session = boto3.Session()
+
+    # Initialize the ECR client
+    ecr = session.client('ecr')
+
+    # Define the repository details
+    repository_name = repository_name
+    registry_id = registry_id
+
+    # Get the image details
+    response = ecr.describe_images(
+        registryId=registry_id,
+        repositoryName=repository_name,
+        maxResults=1,
+        filter={
+            'tagStatus': 'TAGGED'
+        },
+        sort_by='TIMESTAMP',
+        sort_order='DESCENDING'
+    )
+
+    # Extract the latest image details
+    latest_image_details = response['imageDetails'][0]
+
+    # Get the image tags
+    image_tags = latest_image_details['imageTags']
+
+    # Return the most recent tag
+    return image_tags[0]
+
+
 def build_and_push_docker_image(step, region_name):
     client = docker.from_env()
 
@@ -143,8 +178,11 @@ def create_workflow_yaml(steps=None, dependencies=None, deployment_step=None, de
 
     print(f"Found the account ID - {registry}")
 
+
     if steps:
         for step in steps:
+
+            latest_image_tag = get_latest_image_tag(registry, step)
 
             task_name = f"step-{step}"
             dag_task = {
@@ -160,7 +198,7 @@ def create_workflow_yaml(steps=None, dependencies=None, deployment_step=None, de
             container_templates.append({
                 "name": step,
                 "container": {
-                    "image": f"{registry}/{step}:{timestamp}",
+                    "image": f"{registry}/{step}:{latest_image_tag}",
                     "command": ["python", f"{step}.py"],
                     "imagePullPolicy": "Always",
                     "resources":{
@@ -185,6 +223,8 @@ def create_workflow_yaml(steps=None, dependencies=None, deployment_step=None, de
     ]
 
     if deployment_step:
+
+        latest_image_tag = get_latest_image_tag(registry, deployment_step)
 
         if deployment_step in dependencies:
             deploy_task = {
@@ -242,7 +282,7 @@ spec:
     spec:
       containers:
       - name: {deployment_step}
-        image: {registry}/{deployment_step}:{timestamp}
+        image: {registry}/{deployment_step}:{latest_image_tag}
         ports:
         - containerPort: {deployment_port}
         imagePullPolicy: Always
